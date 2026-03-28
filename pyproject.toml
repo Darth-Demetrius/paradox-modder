@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paradox-mod-merger-tool"
+version = "0.1.0"
+description = "Reusable workflow engine for Paradox mod merge prep and build steps"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Jacob K" }
+]
+keywords = ["paradox", "modding", "stellaris", "merge"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "License :: Other/Proprietary License",
+  "Operating System :: OS Independent"
+]
+
+[project.scripts]
+paradox-mod-merger = "paradox_mod_merger_tool.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,28 @@
+[paths]
+build = "_build"
+merged = "_Merged"
+conflicts = "_Conflicts"
+tracking = "_Merged/.upstream_tracking"
+patch = "_My Patch"
+
+[templates]
+replace = "{source_dir}/{source_name}_replace_{source_mod_id}.txt"
+merge = "{source_dir}/����_all_merged_common_items_replace.txt"
+snapshot = "{mod_name}_{source_name}.txt"
+metadata_line = "# {key}: {value}"
+
+[mods]
+source_mod_aliases = ["pd_arcologies", "bpvr_base"]
+conflict_filter_source_mods = ["vanilla", "pd_arcologies"]
+
+[mods.aliases]
+vanilla = ""
+bpvr_compat = "External Mods/BPVR - Compatibility Patch"
+pd_arcologies = "External Mods/Planetary Diversity - More Arcologies"
+bpvr_base = "External Mods/BPVR - More Building Slots"
+my_patch = "_My Patch"
+
+[mods.priority]
+vanilla = 0
+bpvr_compat = 1
+pd_arcologies = 2
