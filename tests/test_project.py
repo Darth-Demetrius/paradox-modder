@@ -16,9 +16,9 @@ class ProjectTests(unittest.TestCase):
                 """
                 [paths]
                 build = "_build"
-                merged = "_Merged"
-                conflicts = "_Conflicts"
-                tracking = "_Merged/.upstream_tracking"
+                merged = "_merged"
+                conflicts = "_conflicts"
+                tracking = "_merged/.upstream_tracking"
                 patch = "_My Patch"
 
                 [templates]
@@ -51,7 +51,7 @@ class ProjectTests(unittest.TestCase):
             self._write_config(config_path)
             project = load_project(project_root=root)
             self.assertEqual(project.build_dir, root / "_build")
-            self.assertEqual(project.conflicts_dir, root / "_Conflicts")
+            self.assertEqual(project.conflicts_dir, root / "_conflicts")
             self.assertEqual(project.alias_to_path["source"], "Source Mod")
             self.assertEqual(project.path_to_alias["Source Mod"], "source")
             self.assertEqual(project.patch_mod, "_My Patch")

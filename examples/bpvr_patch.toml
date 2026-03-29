@@ -1,8 +1,8 @@
 [paths]
 build = "_build"
-merged = "_Merged"
-conflicts = "_Conflicts"
-tracking = "_Merged/.upstream_tracking"
+merged = "_merged"
+conflicts = "_conflicts"
+tracking = "_merged/.upstream_tracking"
 patch = "_My Patch"
 
 [templates]

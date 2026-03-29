@@ -6,11 +6,15 @@ from pathlib import Path
 import re
 
 LEADING_METADATA_KEYS = {
+    "name",
     "output",
     "position",
+    "record_type",
     "sort_key",
+    "source_path",
     "sources",
     "supported_version",
+    "upstream_status",
     "version",
 }
 
@@ -19,6 +23,7 @@ LEADING_METADATA_KEYS = {
 class MergedRecord:
     output_rel: str
     sort_key: tuple[int, int, str]
+    record_type: str
     body: str
 
 
@@ -48,7 +53,7 @@ def read_leading_metadata_block(text: str) -> tuple[dict[str, str], str]:
         saw_metadata = True
         body_start = index + 1
 
-    return metadata, "\n".join(lines[body_start:]).strip()
+    return metadata, "\n".join(lines[body_start:]).rstrip()
 
 
 def split_file_sections(text: str, object_start_re: re.Pattern[str]) -> tuple[str, dict[str, str], str]:
@@ -95,5 +100,6 @@ def read_merged_record(merged_file: Path, object_start_re: re.Pattern[str], mod_
     return MergedRecord(
         output_rel=output_rel,
         sort_key=decode_sort_key(metadata.get("sort_key"), merged_file.stem, mod_priority_size),
+        record_type=metadata.get("record_type", "object"),
         body=body,
     )

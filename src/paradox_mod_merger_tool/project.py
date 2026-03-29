@@ -27,14 +27,14 @@ class WorkflowProject:
     metadata_line_template: str
     descriptor_re: re.Pattern[str]
     object_start_re: re.Pattern[str]
-    mod_aliases: dict[str, str | None]
+    mod_aliases: dict[str, str]
     source_mod_aliases: set[str]
     conflict_filter_source_mods: set[str]
     mod_priority: dict[str, int]
 
     @property
     def alias_to_path(self) -> dict[str, str]:
-        return {alias: path for alias, path in self.mod_aliases.items() if path is not None}
+        return dict(self.mod_aliases)
 
     @property
     def path_to_alias(self) -> dict[str, str]:
@@ -94,11 +94,11 @@ def load_project(project_root: str | Path | None = None, config_file: str | Path
     mod_aliases_raw = _require_table(mods, "aliases")
     mod_priority_raw = _require_table(mods, "priority")
 
-    mod_aliases: dict[str, str | None] = {}
+    mod_aliases: dict[str, str] = {}
     for alias, rel_path in mod_aliases_raw.items():
         if not isinstance(alias, str) or not isinstance(rel_path, str):
             raise ValueError("mods.aliases entries must be string = string")
-        mod_aliases[alias] = rel_path or None
+        mod_aliases[alias] = rel_path
 
     source_mod_aliases = set(mods.get("source_mod_aliases", []))
     conflict_filter_source_mods = set(mods.get("conflict_filter_source_mods", []))

@@ -9,7 +9,7 @@ description = "Reusable workflow engine for Paradox mod merge prep and build ste
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-  { name = "Jacob K" }
+  { name = "Darth Demetrius" }
 ]
 keywords = ["paradox", "modding", "stellaris", "merge"]
 classifiers = [
