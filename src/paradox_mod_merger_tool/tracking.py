@@ -28,14 +28,14 @@ def write_tracking_state(project: WorkflowProject, state: TrackingState) -> None
 
 def tracking_payload(entry: ConflictEntry) -> dict[str, Any]:
     return {
-        "output": entry.output_rel,
+        "path": entry.output_rel,
         "record_type": entry.key.record_type,
         "source_path": entry.key.source_path,
         "name": entry.key.name,
         "sources": {
             source.ref: {
                 "hash": source.source_hash,
-                "position": source.position,
+                "sort_key": source.position,
                 "supported_version": source.supported_version,
                 "body": source.body,
             }

@@ -18,8 +18,7 @@ class ProjectTests(unittest.TestCase):
                 build = "_build"
                 merged = "_merged"
                 conflicts = "_conflicts"
-                tracking = "_merged/.upstream_tracking"
-                patch = "_My Patch"
+                tracking = "_tracking"
 
                 [templates]
                 replace = "{source_dir}/{source_name}_replace_{source_mod_id}.txt"
@@ -27,15 +26,16 @@ class ProjectTests(unittest.TestCase):
                 snapshot = "{mod_name}_{source_name}.txt"
 
                 [mods]
-                source_mod_aliases = ["source"]
-                conflict_filter_source_mods = ["vanilla", "source"]
-
-                [mods.aliases]
                 vanilla = ""
                 source = "Source Mod"
-                my_patch = "_My Patch"
+                my_mod = "_My Patch"
 
-                [mods.priority]
+                [conflicts]
+                [[conflicts.rules]]
+                any_from = ["source"]
+                with_any = ["vanilla"]
+
+                [priority]
                 vanilla = 0
                 source = 1
                 """
@@ -54,7 +54,7 @@ class ProjectTests(unittest.TestCase):
             self.assertEqual(project.conflicts_dir, root / "_conflicts")
             self.assertEqual(project.alias_to_path["source"], "Source Mod")
             self.assertEqual(project.path_to_alias["Source Mod"], "source")
-            self.assertEqual(project.patch_mod, "_My Patch")
+            self.assertEqual(project.my_mod_dir, root / "_My Patch")
 
     def test_explicit_config_does_not_change_project_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -2,8 +2,8 @@
 build = "_build"
 merged = "_merged"
 conflicts = "_conflicts"
-tracking = "_merged/.upstream_tracking"
-patch = "_My Patch"
+tracking = "_tracking"
+my_mod = "my_patch"
 
 [templates]
 replace = "{source_dir}/{source_name}_replace_{source_mod_id}.txt"
@@ -12,17 +12,23 @@ snapshot = "{mod_name}_{source_name}.txt"
 metadata_line = "# {key}: {value}"
 
 [mods]
-source_mod_aliases = ["pd_arcologies", "bpvr_base"]
-conflict_filter_source_mods = ["vanilla", "pd_arcologies"]
-
-[mods.aliases]
-vanilla = ""
-bpvr_compat = "External Mods/BPVR - Compatibility Patch"
-pd_arcologies = "External Mods/Planetary Diversity - More Arcologies"
-bpvr_base = "External Mods/BPVR - More Building Slots"
+vanilla = "/disks/SteamLibrary/SteamLibrary/steamapps/common/Stellaris"
 my_patch = "_My Patch"
+pd_arcologies = "Imports/Planetary Diversity - More Arcologies"
+bpvr_base = "Imports/BPVR - More Building Slots"
+bpvr_compat = "Imports/BPVR - Compatibility Patch"
 
-[mods.priority]
-vanilla = 0
-bpvr_compat = 1
-pd_arcologies = 2
+[[conflicts.rules]]
+any_from = ["vanilla"]
+with_any = ["my_patch"]
+
+[[conflicts.rules]]
+any_from = ["my_patch", "pd_arcologies"]
+with_any = ["my_patch", "bpvr_base", "bpvr_compat"]
+
+[priority]
+bpvr_compat = 0
+pd_arcologies = 1
+vanilla = 2
+bpvr_base = 3
+my_patch = 4

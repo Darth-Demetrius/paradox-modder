@@ -8,11 +8,22 @@ from .parse import parse_mod_name
 from .project import WorkflowProject
 
 
+def _snapshot_mod_token(project: WorkflowProject, mod_name: str) -> str:
+    alias = project.path_to_alias.get(mod_name, mod_name.lower())
+    token = alias.replace("/", "_").replace("\\", "_").strip("._")
+    return token or "vanilla"
+
+
 def split_ref(project: WorkflowProject, ref: str) -> tuple[str, str]:
-    for mod_name in sorted(project.mods_to_check, key=len, reverse=True):
-        prefix = f"{mod_name}/"
-        if ref.startswith(prefix):
-            return mod_name, ref[len(prefix):]
+    candidates = sorted(
+        project.alias_to_path.items(),
+        key=lambda item: len(item[0]),
+        reverse=True,
+    )
+    for alias, mod_path in candidates:
+        alias_prefix = f"{alias}/"
+        if ref.startswith(alias_prefix):
+            return mod_path, ref[len(alias_prefix):]
     raise ValueError(f"Unrecognized ref mod prefix: {ref}")
 
 
@@ -37,7 +48,7 @@ def derive_output_from_refs(project: WorkflowProject, refs: list[str]) -> str:
 def snapshot_path(project: WorkflowProject, ref: str, key: ConflictKey) -> Path:
     mod_name, rel_text = split_ref(project, ref)
     rel = Path(rel_text)
-    name = project.snapshot_name_template.format(mod_name=mod_name, source_name=rel.stem)
+    name = project.snapshot_name_template.format(mod_name=_snapshot_mod_token(project, mod_name), source_name=rel.stem)
     scope = key.name if key.record_type == "object" else key.record_type
     return project.tracking_dir / rel.parent / rel.stem / scope / name
 
@@ -58,12 +69,12 @@ def active_build_dir(project: WorkflowProject) -> Path:
 
 
 def copy_patch_metadata(project: WorkflowProject, build_dir: Path) -> None:
-    mod_name = parse_mod_name(project.patch_dir, project.descriptor_re)
-    descriptor_src = project.patch_dir / "descriptor.mod"
+    mod_name = parse_mod_name(project.my_mod_dir, project.descriptor_re)
+    descriptor_src = project.my_mod_dir / "descriptor.mod"
     if descriptor_src.exists():
         shutil.copy2(descriptor_src, build_dir / f"{mod_name}.mod")
-    for path in project.patch_dir.rglob("*"):
+    for path in project.my_mod_dir.rglob("*"):
         if path.is_file() and path.suffix == ".md":
-            out = build_dir / path.relative_to(project.patch_dir)
+            out = build_dir / path.relative_to(project.my_mod_dir)
             out.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(path, out)

@@ -20,12 +20,60 @@ The tool is intentionally config-driven so individual patch repos can keep thin 
 
 ```bash
 cd '/disks/Storage/Code Workspaces/Paradox Mod Merger Tool'
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
+python -m pip install -e .
 ```
 
 ## Usage
+
+### Initialising a new project
+
+Run `init` once inside an empty project directory to generate `mod_merger.toml` and the required working directories:
+
+```bash
+paradox-mod-merger --project-root /path/to/project init \
+  --patch-name "My Compatibility Patch" \
+  --mod pd_arcologies="External Mods/Planetary Diversity - More Arcologies" \
+  --mod bpvr_base="External Mods/BPVR - More Building Slots" \
+  --source-mod pd_arcologies \
+  --source-mod bpvr_base \
+  --filter-mod vanilla \
+  --filter-mod pd_arcologies
+```
+
+This creates:
+
+- `mod_merger.toml` — project config with sane defaults you can edit
+- `My Compatibility Patch/descriptor.mod` — skeleton mod descriptor
+- `_merged/`, `_build/`, `_conflicts/` — working directories
+
+Flags:
+
+| Flag                 | Description                                                      |
+|----------------------|------------------------------------------------------------------|
+| `--patch-name NAME`  | **(required)** Human-readable name of your patch mod             |
+| `--patch-dir PATH`   | Relative directory for the patch mod. Defaults to the patch name |
+| `--mod ALIAS=PATH`   | Add a mod alias (repeat for each mod)                            |
+| `--source-mod ALIAS` | Mark an alias as a conflict-source mod (repeat as needed)        |
+| `--filter-mod ALIAS` | Mark an alias as a conflict-filter mod (repeat as needed)        |
+| `--force`            | Overwrite an existing `mod_merger.toml`                          |
+
+After running `init`, open `mod_merger.toml` to verify the paths match your actual mod layout, then run `scan`.
+
+### Typical command sequence
+
+Run the workflow in this order:
+
+```bash
+paradox-mod-merger --project-root /path/to/project scan
+# review and resolve files in _merged/ (if present)
+# bash _conflicts/review_conflicts.sh
+paradox-mod-merger --project-root /path/to/project assemble
+paradox-mod-merger --project-root /path/to/project create --manifest-file /path/to/project/create.toml
+```
+
+Use `create` only when you are generating new review records from a manifest.
+
+### Other commands
 
 With an installed console script:
 
@@ -35,18 +83,18 @@ paradox-mod-merger --project-root /path/to/project --config-file /path/to/projec
 paradox-mod-merger --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml create --manifest-file /path/to/project/.scripts/create.toml
 ```
 
-Without installation:
+Using the module entrypoint:
 
 ```bash
 cd '/disks/Storage/Code Workspaces/Paradox Mod Merger Tool'
-PYTHONPATH=src python3 -m paradox_mod_merger_tool --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml scan
-PYTHONPATH=src python3 -m paradox_mod_merger_tool --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml assemble
-PYTHONPATH=src python3 -m paradox_mod_merger_tool --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml create --manifest-file /path/to/project/.scripts/create.toml
+python -m paradox_mod_merger_tool --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml scan
+python -m paradox_mod_merger_tool --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml assemble
+python -m paradox_mod_merger_tool --project-root /path/to/project --config-file /path/to/project/.scripts/project-config.toml create --manifest-file /path/to/project/.scripts/create.toml
 ```
 
 ## Scan Output
 
-`scan` keeps `_merged/.upstream_tracking/state.json` between runs and records a status for each conflict entry:
+`scan` keeps `_tracking/state.json` between runs and records a status for each conflict entry:
 
 - `new-upstream`: no local merged record exists yet, or a new upstream source appeared
 - `stale`: an existing merged record has upstream source content changes to review
@@ -105,6 +153,7 @@ Internal module layout:
 - `metadata.py`: merged-record metadata parsing/rendering
 - `domain.py`: shared dataclasses for conflicts and records
 - `layout.py`: output, snapshot, and path derivation helpers
+- `init.py`: project initialisation (config scaffold, directory creation)
 - `scan.py`: source scanning, conflict detection, snapshots, and seeding
 - `create.py`: public manifest-driven record creation API
 - `assemble.py`: public assembly API for `_merged/` records
@@ -116,5 +165,5 @@ Run the tests with:
 
 ```bash
 cd '/disks/Storage/Code Workspaces/Paradox Mod Merger Tool'
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```

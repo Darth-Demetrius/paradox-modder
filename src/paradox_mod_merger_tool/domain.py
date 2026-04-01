@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-RecordType = Literal["object", "preamble", "file"]
+RecordType = Literal["object", "file_variable", "preamble", "file", "scripted_variable", "event"]
 PREAMBLE_NAME = "__preamble__"
 WHOLE_FILE_NAME = "__whole_file__"
 

@@ -58,17 +58,15 @@ def run_generate(project: WorkflowProject, manifest_file: Path) -> int:
         output_path.write_text(
             render_metadata_block(
                 {
-                    "output": output_rel,
+                    "path": output_rel,
                     "record_type": record_type,
-                    "name": name,
-                    "source_path": source_path or output_rel,
-                    "upstream_status": "generated",
+                    "supported_version": str(record.get("supported_version", "")).strip(),
                     "sort_key": coerce_sort_key(record.get("sort_key"), name, len(project.mod_priority)),
                     "sources": record.get("sources", []),
                 },
                 metadata_line_template=project.metadata_line_template,
             )
-            + body
+            + body.replace("    ", "\t")
             + "\n",
             encoding="utf-8",
         )
